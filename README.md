@@ -1,4 +1,6 @@
 # Whatsapp Chat Counter
+Find out the number of times someone said something to you in WhatsApp!
+ 
 <img src="result_1.png" width=250>
 
 # How to use
