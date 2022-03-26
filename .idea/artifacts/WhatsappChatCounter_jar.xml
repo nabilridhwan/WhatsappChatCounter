@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="WhatsappChatCounter:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/WhatsappChatCounter_jar</output-path>
+    <root id="archive" name="WhatsappChatCounter.jar">
+      <element id="module-output" name="WhatsappChatCounter" />
+    </root>
+  </artifact>
+</component>
