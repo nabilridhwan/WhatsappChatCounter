@@ -9,10 +9,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChatIO {
-    private static List<MessageLine> conversation = new ArrayList<>();
-    private static List<String> conversationString = new ArrayList<>();
+    private List<MessageLine> conversation = new ArrayList<>();
+    private List<String> conversationString = new ArrayList<>();
+    private List<String> authors = new ArrayList<>();
 
-    public static List<MessageLine> readChat(File f) throws FileNotFoundException {
+    public List<MessageLine> readChat(File f) throws FileNotFoundException {
 
 //        Clear the conversation
         conversation.clear();
@@ -38,7 +39,7 @@ public class ChatIO {
         return getConversation();
     }
 
-    private static void forceLineWithDatesAtTheFront(List<String> c) {
+    private void forceLineWithDatesAtTheFront(List<String> c) {
         int lastLineNonNull = 0;
         int lineWithoutDateCount = 0;
 
@@ -72,10 +73,11 @@ public class ChatIO {
         conversationString = temp;
     }
 
-    private static void parseMessages() {
+    private void parseMessages() {
         Pattern p = Pattern.compile("\\[(\\d+)/(\\d+)/(\\d+), (\\d+):(\\d+):(\\d+) ([APM]+)\\] ([^:]+): (.+)", Pattern.CASE_INSENSITIVE);
 
-        for (String line : conversationString) {
+        for(int i = 1; i < conversationString.size(); i++){
+            String line = conversationString.get(i);
             Matcher m = p.matcher(line);
 
             if (m.find()) {
@@ -96,6 +98,10 @@ public class ChatIO {
                 conversation.add(
                         new MessageLine(day, month, year, hour, mins, sec, author, content)
                 );
+
+                if(!authors.contains(author)){
+                    authors.add(author);
+                }
             }
         }
     }
@@ -104,7 +110,11 @@ public class ChatIO {
         return conversation.size();
     }
 
-    public static List<MessageLine> getConversation() {
+    public List<MessageLine> getConversation() {
         return conversation;
+    }
+
+    public List<String> getAuthors() {
+        return authors;
     }
 }

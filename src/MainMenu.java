@@ -21,6 +21,7 @@ public class MainMenu extends JDialog {
     private JFileChooser fc = new JFileChooser();
     private File file;
     private HashMap<String, Integer> hm = new HashMap<>();
+    private final ChatIO cio = new ChatIO();
 
     public MainMenu() {
         setContentPane(contentPane);
@@ -66,7 +67,7 @@ public class MainMenu extends JDialog {
 
 
             try {
-                List<MessageLine> chat = ChatIO.readChat(file);
+                List<MessageLine> chat = cio.readChat(file);
 
                 for (int i = 0; i < chat.size(); i++) {
                     MessageLine msg = chat.get(i);
@@ -86,6 +87,21 @@ public class MainMenu extends JDialog {
                         hm.toString()
                 );
 
+                StringBuilder results = new StringBuilder();
+
+                List<String> authors = cio.getAuthors();
+
+                for(String author: authors){
+                    if(hm.get(author) != null){
+                        results.append(
+                                String.format(
+                                        "%s:\t%d\n", author, hm.get(author)
+                                )
+                        );
+                    }
+                }
+
+                resultPane.setText(results.toString());
 
                 numberOfMessages.setText(
                        "Messages: " + chat.size()
