@@ -32,13 +32,13 @@ public class ChatIO {
         }
 
 
-        forceLineWithDatesInfront(conversationString);
+        forceLineWithDatesAtTheFront(conversationString);
         parseMessages();
 
         return getConversation();
     }
 
-    private static void forceLineWithDatesInfront(List<String> c) {
+    private static void forceLineWithDatesAtTheFront(List<String> c) {
         int lastLineNonNull = 0;
         int lineWithoutDateCount = 0;
 

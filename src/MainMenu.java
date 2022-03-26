@@ -51,7 +51,7 @@ public class MainMenu extends JDialog {
 
     public void handleClick() {
 
-        String searchQueryText = searchQuery.getText();
+        String searchQueryText = searchQuery.getText().toLowerCase();
         boolean error = false;
 
         if (file == null) {
@@ -70,7 +70,7 @@ public class MainMenu extends JDialog {
 
                 for (int i = 0; i < chat.size(); i++) {
                     MessageLine msg = chat.get(i);
-                    if (msg.getContent().contains(searchQuery.getText())) {
+                    if (msg.getContent().toLowerCase().contains(searchQueryText)) {
 
                         if (!hm.containsKey(msg.getAuthor())) {
                             hm.put(msg.getAuthor(), 1);
