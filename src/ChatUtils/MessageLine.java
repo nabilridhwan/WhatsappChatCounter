@@ -1,5 +1,7 @@
 package ChatUtils;
 
+import org.joda.time.DateTime;
+
 public class MessageLine{
     int day;
     int month;
@@ -9,6 +11,7 @@ public class MessageLine{
     int sec;
     String author;
     String content;
+    DateTime date;
 
     public MessageLine(int day, int month, int year, int hour, int minutes, int sec, String author, String content){
         this.day = day;
@@ -19,6 +22,9 @@ public class MessageLine{
         this.sec =sec;
         this.author = author;
         this.content = content;
+
+//        Set date
+        this.date = new DateTime(year, month, day, hour - 1, minutes, sec);
     }
 
     public int getDay() {
@@ -43,6 +49,10 @@ public class MessageLine{
 
     public int getYear() {
         return year;
+    }
+
+    public DateTime getDate(){
+        return date;
     }
 
     public String getAuthor() {
