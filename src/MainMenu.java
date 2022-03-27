@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class MainMenu extends JDialog {
     private JPanel contentPane;
@@ -16,12 +17,15 @@ public class MainMenu extends JDialog {
     private JTextField searchQuery;
     private JTextPane resultPane;
     private JLabel numberOfMessages;
+    private JLabel totalMatches;
     private JButton buttonOK;
 
     private JFileChooser fc = new JFileChooser();
-    private File file;
     private HashMap<String, Integer> hm = new HashMap<>();
-    private final ChatIO cio = new ChatIO();
+
+    private final static ChatIO cio = new ChatIO();
+    private static File file;
+    private static List<MessageLine> messages;
 
     public MainMenu() {
         setContentPane(contentPane);
@@ -36,8 +40,6 @@ public class MainMenu extends JDialog {
                 file = fc.getSelectedFile();
 //                Set the filename
                 selectFileButton.setText(file.getName());
-
-
             }
         });
 
@@ -45,13 +47,20 @@ public class MainMenu extends JDialog {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                handleClick();
+                if (!verifyForErrors()) {
+                    try {
+                        messages = cio.readChat(file);
+                        displayStatistic();
+                    } catch (FileNotFoundException ex) {
+                        JOptionPane.showMessageDialog(null, "Error opening file", "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                    }
+                }
             }
         });
     }
 
-    public void handleClick() {
-
+    public boolean verifyForErrors() {
         String searchQueryText = searchQuery.getText().toLowerCase();
         boolean error = false;
 
@@ -63,58 +72,56 @@ public class MainMenu extends JDialog {
             error = true;
         }
 
-        if (!error) {
+        return error;
+    }
 
+    public void displayStatistic() {
+        String searchQueryText = searchQuery.getText().toLowerCase();
 
-            try {
-                List<MessageLine> chat = cio.readChat(file);
+        for (MessageLine msg : messages) {
+            if (msg.getContent().toLowerCase().contains(searchQueryText)) {
 
-                for (int i = 0; i < chat.size(); i++) {
-                    MessageLine msg = chat.get(i);
-                    if (msg.getContent().toLowerCase().contains(searchQueryText)) {
-
-                        if (!hm.containsKey(msg.getAuthor())) {
-                            hm.put(msg.getAuthor(), 1);
-                        } else {
-                            int prev = hm.get(msg.getAuthor());
-                            hm.replace(msg.getAuthor(), prev + 1);
-                        }
-                    }
+                if (!hm.containsKey(msg.getAuthor())) {
+                    hm.put(msg.getAuthor(), 1);
+                } else {
+                    int prev = hm.get(msg.getAuthor());
+                    hm.replace(msg.getAuthor(), prev + 1);
                 }
-
-//            Place result text here
-                resultPane.setText(
-                        hm.toString()
-                );
-
-                StringBuilder results = new StringBuilder();
-
-                List<String> authors = cio.getAuthors();
-
-                for(String author: authors){
-                    if(hm.get(author) != null){
-                        results.append(
-                                String.format(
-                                        "%s:\t%d\n", author, hm.get(author)
-                                )
-                        );
-                    }
-                }
-
-                resultPane.setText(results.toString());
-
-                numberOfMessages.setText(
-                       "Messages: " + chat.size()
-                );
-
-//            Clear the hashmap
-                hm.clear();
-
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(null, "Error opening file", "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
             }
         }
+
+        StringBuilder results = new StringBuilder();
+
+//                Get the keys inside the hashmap
+        Set<String> keys = hm.keySet();
+
+        int total = 0;
+
+//                For every key (author), append the author and the result to the string builder
+        for (String key : keys) {
+            int numMsg = hm.get(key);
+
+//                    Add numMsg to total
+            total += numMsg;
+            results.append(
+                    String.format(
+                            "%s:\t%d\n", key, numMsg
+                    )
+            );
+        }
+
+        resultPane.setText(results.toString());
+
+        numberOfMessages.setText(
+                "Total Messages: " + messages.size()
+        );
+
+        totalMatches.setText(
+                "Total Matches: " + total
+        );
+
+//            Clear the hashmap
+        hm.clear();
     }
 
     public static void main(String[] args) {
