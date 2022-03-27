@@ -18,6 +18,7 @@ public class MainMenu extends JDialog {
     private JTextPane resultPane;
     private JLabel numberOfMessages;
     private JLabel totalMatches;
+    private JComboBox comboBox;
     private JButton buttonOK;
 
     private JFileChooser fc = new JFileChooser();
@@ -77,17 +78,31 @@ public class MainMenu extends JDialog {
 
     public void displayStatistic() {
         String searchQueryText = searchQuery.getText().toLowerCase();
+        String comboBoxText = comboBox.getSelectedItem().toString().toLowerCase();
 
         for (MessageLine msg : messages) {
-            if (msg.getContent().toLowerCase().contains(searchQueryText)) {
+            if (comboBoxText.equals("includes")) {
+                if (msg.getContent().toLowerCase().contains(searchQueryText)) {
 
-                if (!hm.containsKey(msg.getAuthor())) {
-                    hm.put(msg.getAuthor(), 1);
-                } else {
-                    int prev = hm.get(msg.getAuthor());
-                    hm.replace(msg.getAuthor(), prev + 1);
+                    if (!hm.containsKey(msg.getAuthor())) {
+                        hm.put(msg.getAuthor(), 1);
+                    } else {
+                        int prev = hm.get(msg.getAuthor());
+                        hm.replace(msg.getAuthor(), prev + 1);
+                    }
+                }
+            } else {
+                if (msg.getContent().toLowerCase().equals(searchQueryText)) {
+
+                    if (!hm.containsKey(msg.getAuthor())) {
+                        hm.put(msg.getAuthor(), 1);
+                    } else {
+                        int prev = hm.get(msg.getAuthor());
+                        hm.replace(msg.getAuthor(), prev + 1);
+                    }
                 }
             }
+
         }
 
         StringBuilder results = new StringBuilder();
